@@ -9,6 +9,8 @@
         }
     ],
     "require": {
-        "firebase/php-jwt": "^7.0"
+        "firebase/php-jwt": "^7.0",
+        "setasign/fpdi": "^2.6",
+        "tecnickcom/tcpdf": "^6.11"
     }
 }

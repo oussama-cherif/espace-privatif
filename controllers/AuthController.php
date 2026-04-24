@@ -52,6 +52,7 @@ class AuthController
         $_SESSION['document_id']  = $tokenRow['document_id'];
         $_SESSION['token_id']     = $tokenRow['id'];
         $_SESSION['expire_at']    = time() + (int) $config['session_lifetime'];
+        $_SESSION['csrf_token']   = bin2hex(random_bytes(32));
 
         header('Location: /document');
         exit;

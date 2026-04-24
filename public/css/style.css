@@ -1,0 +1,112 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: system-ui, sans-serif;
+    background: #f5f5f5;
+    color: #222;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 860px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.document-header {
+    background: #fff;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-left: 4px solid #2563eb;
+}
+
+.document-header h1 { font-size: 1.4rem; margin-bottom: 0.5rem; }
+.document-header .fichier { color: #666; font-size: 0.9rem; margin-top: 0.25rem; }
+
+.pdf-wrapper {
+    background: #fff;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    overflow-x: auto;
+    text-align: center;
+}
+
+#pdf-canvas {
+    max-width: 100%;
+    border: 1px solid #ddd;
+}
+
+#pdf-navigation {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 0.75rem;
+}
+
+#pdf-navigation button {
+    padding: 0.4rem 0.8rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: #fff;
+    cursor: pointer;
+}
+
+.signature-section {
+    background: #fff;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.signature-section h2 { margin-bottom: 0.5rem; }
+
+#signature-canvas {
+    display: block;
+    width: 100%;
+    height: 180px;
+    border: 2px dashed #ccc;
+    border-radius: 4px;
+    margin-top: 1rem;
+    cursor: crosshair;
+    background: #fafafa;
+}
+
+.signature-actions {
+    margin-top: 0.5rem;
+    text-align: right;
+}
+
+.btn {
+    display: inline-block;
+    padding: 0.6rem 1.4rem;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    text-decoration: none;
+}
+
+.btn-primary {
+    background: #2563eb;
+    color: #fff;
+    width: 100%;
+    padding: 0.9rem;
+    font-size: 1.1rem;
+}
+
+.btn-primary:hover { background: #1d4ed8; }
+
+#btn-effacer {
+    background: none;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 0.3rem 0.8rem;
+    cursor: pointer;
+    color: #666;
+}
+
+h1 { margin-bottom: 1rem; }
+p { margin-bottom: 0.5rem; }
