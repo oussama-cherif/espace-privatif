@@ -1,0 +1,14 @@
+{
+    "name": "espace-privatif/app",
+    "description": "Module de signature electronique web securise",
+    "type": "project",
+    "authors": [
+        {
+            "name": "oussama-cherif",
+            "email": "cherifoussama1996@gmail.com"
+        }
+    ],
+    "require": {
+        "firebase/php-jwt": "^7.0"
+    }
+}
