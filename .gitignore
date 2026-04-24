@@ -25,3 +25,4 @@ Thumbs.db
 # Uploads et documents générés
 public/uploads/
 public/documents/signed/
+storage/documents/
