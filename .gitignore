@@ -1,0 +1,27 @@
+# Fichiers internes
+CLAUDE.md
+CHEATSHEET.md
+*.notes.md
+
+# Configuration sensible
+.env
+config/database.php
+
+# Dépendances PHP (Composer)
+vendor/
+
+# Logs
+logs/
+*.log
+
+# Fichiers système
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Uploads et documents générés
+public/uploads/
+public/documents/signed/
