@@ -5,6 +5,7 @@ require_once __DIR__ . '/../models/TokenModel.php';
 require_once __DIR__ . '/../core/Database.php';
 require_once __DIR__ . '/../core/PdfSigner.php';
 require_once __DIR__ . '/../core/SothisNotifier.php';
+require_once __DIR__ . '/../core/Mailer.php';
 require_once __DIR__ . '/../vendor/autoload.php';
 
 class SignatureController
@@ -122,6 +123,22 @@ class SignatureController
             'hash'       => $document['hash_sha256'],
             'signed_at'  => date('Y-m-d H:i:s'),
         ]);
+
+        $dateSignature = date('d/m/Y à H:i');
+        $mailer = new Mailer();
+        $mailer->confirmerLocataire(
+            $document['email'],
+            $document['prenom'],
+            $document['nom_fichier'],
+            $dateSignature
+        );
+        $mailer->notifierGestionnaire(
+            $document['gestionnaire_email'],
+            $document['prenom'] . ' ' . $document['nom'],
+            $document['nom_fichier'],
+            $dateSignature,
+            $document['residence_nom']
+        );
 
         $documentId = $document['id'];
         session_destroy();

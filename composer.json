@@ -13,6 +13,7 @@
         "setasign/fpdi": "^2.6",
         "tecnickcom/tcpdf": "^6.11",
         "cboden/ratchet": "^0.4.4",
-        "textalk/websocket": "^1.6"
+        "textalk/websocket": "^1.6",
+        "phpmailer/phpmailer": "^7.0"
     }
 }

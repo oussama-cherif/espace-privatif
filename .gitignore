@@ -6,6 +6,7 @@ CHEATSHEET.md
 # Configuration sensible
 .env
 config/database.php
+config/mail.php
 
 # Dépendances PHP (Composer)
 vendor/
