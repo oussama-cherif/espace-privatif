@@ -55,8 +55,8 @@ class SignatureController
             return;
         }
 
-        $imageData     = base64_decode(str_replace('data:image/png;base64,', '', $signatureData));
-        $signatureDir  = __DIR__ . '/../storage/signatures/' . $document['id'];
+        $imageData    = base64_decode(str_replace('data:image/png;base64,', '', $signatureData));
+        $signatureDir = __DIR__ . '/../storage/signatures/' . $document['id'];
 
         if (!is_dir($signatureDir)) {
             mkdir($signatureDir, 0755, true);
@@ -65,23 +65,48 @@ class SignatureController
         $signaturePath = $signatureDir . '/signature.png';
         file_put_contents($signaturePath, $imageData);
 
-        $db   = Database::getConnection();
-        $stmt = $db->prepare(
-            'INSERT INTO signatures
-                (document_id, locataire_id, hash_document, signature_image, ip_address, user_agent, signed_at)
-             VALUES
-                (:document_id, :locataire_id, :hash_document, :signature_image, :ip, :ua, NOW())'
-        );
-        $stmt->execute([
-            'document_id'     => $document['id'],
-            'locataire_id'    => $_SESSION['locataire_id'],
-            'hash_document'   => $document['hash_sha256'],
-            'signature_image' => 'signatures/' . $document['id'] . '/signature.png',
-            'ip'              => $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0',
-            'ua'              => $_SERVER['HTTP_USER_AGENT'] ?? '',
-        ]);
+        $db = Database::getConnection();
+        $db->beginTransaction();
 
-        $documentModel->updateStatus($document['id'], 'SIGNED_UNVALIDATED');
+        try {
+            $lock = $db->prepare('SELECT id, status FROM documents WHERE id = :id FOR UPDATE');
+            $lock->execute(['id' => $document['id']]);
+            $row = $lock->fetch();
+
+            if ($row === false || $row['status'] !== 'PENDING_SIGNATURE') {
+                $db->rollBack();
+                http_response_code(409);
+                $message = 'Ce document est déjà en cours de signature ou a déjà été signé.';
+                require __DIR__ . '/../views/error.php';
+                return;
+            }
+
+            $stmt = $db->prepare(
+                'INSERT INTO signatures
+                    (document_id, locataire_id, hash_document, signature_image, ip_address, user_agent, signed_at)
+                 VALUES
+                    (:document_id, :locataire_id, :hash_document, :signature_image, :ip, :ua, NOW())'
+            );
+            $stmt->execute([
+                'document_id'     => $document['id'],
+                'locataire_id'    => $_SESSION['locataire_id'],
+                'hash_document'   => $document['hash_sha256'],
+                'signature_image' => 'signatures/' . $document['id'] . '/signature.png',
+                'ip'              => $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0',
+                'ua'              => $_SERVER['HTTP_USER_AGENT'] ?? '',
+            ]);
+
+            $db->prepare('UPDATE documents SET status = :status WHERE id = :id')
+               ->execute(['status' => 'SIGNED_UNVALIDATED', 'id' => $document['id']]);
+
+            $db->commit();
+        } catch (\Exception $e) {
+            $db->rollBack();
+            http_response_code(500);
+            $message = 'Une erreur est survenue lors de l\'enregistrement de la signature.';
+            require __DIR__ . '/../views/error.php';
+            return;
+        }
 
         $cheminOriginal    = __DIR__ . '/../storage/' . $document['chemin'];
         $cheminSignature   = $signaturePath;
