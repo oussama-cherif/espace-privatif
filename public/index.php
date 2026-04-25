@@ -9,7 +9,10 @@ if (file_exists($envFile)) {
             continue;
         }
         [$key, $value] = explode('=', $line, 2);
-        $_ENV[trim($key)] = trim($value);
+        $key = trim($key);
+        if (!isset($_ENV[$key]) && getenv($key) === false) {
+            $_ENV[$key] = trim($value);
+        }
     }
 }
 

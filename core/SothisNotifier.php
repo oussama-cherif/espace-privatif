@@ -6,9 +6,9 @@ class SothisNotifier
 {
     private string $url;
 
-    public function __construct(string $url = 'ws://127.0.0.1:8081')
+    public function __construct()
     {
-        $this->url = $url;
+        $this->url = $_ENV['SOTHIS_WS_URL'] ?? getenv('SOTHIS_WS_URL') ?: 'ws://127.0.0.1:8081';
     }
 
     public function notifierSignature(int $documentId, array $metadonnees): bool
