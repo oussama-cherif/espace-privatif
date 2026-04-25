@@ -11,16 +11,12 @@ class DocumentHub implements MessageComponentInterface
     private \SplObjectStorage $clients;
     private array $abonnements = [];
     private PDO $db;
-    private string $secret;
 
     public function __construct(LoopInterface $loop)
     {
         $this->clients = new \SplObjectStorage();
         $this->db      = Database::getConnection();
-        $config        = require __DIR__ . '/../config/app.php';
-        $this->secret  = $config['jwt_secret'];
 
-        // Toutes les 2 secondes, vérifie le statut des documents surveillés
         $loop->addPeriodicTimer(2, function () {
             $this->verifierStatuts();
         });
@@ -39,16 +35,8 @@ class DocumentHub implements MessageComponentInterface
             return;
         }
 
-        if ($data['type'] === 'subscribe' && isset($data['document_id'], $data['ws_token'])) {
-            $docId         = (int) $data['document_id'];
-            $tokenAttendu  = hash_hmac('sha256', 'ws_doc_' . $docId, $this->secret);
-
-            if (!hash_equals($tokenAttendu, $data['ws_token'])) {
-                $from->send(json_encode(['type' => 'error', 'message' => 'Token invalide.']));
-                $from->close();
-                return;
-            }
-
+        if ($data['type'] === 'subscribe' && isset($data['document_id'])) {
+            $docId = (int) $data['document_id'];
             $this->abonnements[$docId][] = $from;
             echo "Navigateur abonné au document #" . $docId . PHP_EOL;
         }
