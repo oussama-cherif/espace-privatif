@@ -3,6 +3,7 @@
 require_once __DIR__ . '/../models/DocumentModel.php';
 require_once __DIR__ . '/../models/TokenModel.php';
 require_once __DIR__ . '/../core/Database.php';
+require_once __DIR__ . '/../core/PdfSigner.php';
 
 class SignatureController
 {
@@ -78,6 +79,23 @@ class SignatureController
         ]);
 
         $documentModel->updateStatus($document['id'], 'SIGNED_UNVALIDATED');
+
+        $cheminOriginal    = __DIR__ . '/../storage/' . $document['chemin'];
+        $cheminSignature   = $signaturePath;
+        $cheminSigne       = __DIR__ . '/../storage/documents/' . $document['id'] . '/signed/' . $document['nom_fichier'];
+
+        $pdfSigner = new PdfSigner();
+        $pdfSigner->genererPdfSigne($cheminOriginal, $cheminSignature, $cheminSigne, [
+            'prenom'         => $document['prenom'],
+            'nom'            => $document['nom'],
+            'email'          => $document['email'],
+            'date_signature' => date('d/m/Y H:i:s'),
+            'ip'             => $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0',
+            'user_agent'     => $_SERVER['HTTP_USER_AGENT'] ?? '',
+            'hash_document'  => $document['hash_sha256'],
+            'residence'      => $document['residence_nom'],
+            'nom_fichier'    => $document['nom_fichier'],
+        ]);
 
         $tokenModel = new TokenModel();
         $tokenModel->markAsUsed((int) $_SESSION['token_id']);
