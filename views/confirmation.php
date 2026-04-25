@@ -10,7 +10,44 @@
     <div class="container">
         <h1>Signature enregistrée</h1>
         <p>Votre signature a bien été enregistrée.</p>
-        <p>Le document est en cours de validation par votre gestionnaire. Vous recevrez un mail de confirmation dès que la validation sera effectuée.</p>
+        <div id="statut-box">
+            <p id="statut-message">Le document est en cours de validation par SOTHIS...</p>
+            <div id="loader"></div>
+        </div>
     </div>
+
+    <style>
+        #statut-box { margin-top: 1.5rem; padding: 1rem; background: #f0f4ff; border-radius: 8px; border-left: 4px solid #2563eb; }
+        #loader { width: 32px; height: 32px; border: 3px solid #ddd; border-top-color: #2563eb; border-radius: 50%; animation: spin 0.8s linear infinite; margin-top: 0.75rem; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .valide { background: #f0fdf4 !important; border-left-color: #16a34a !important; }
+    </style>
+
+    <script>
+        const documentId = <?= (int) ($documentId ?? 0) ?>;
+
+        if (documentId && typeof WebSocket !== 'undefined') {
+            const ws = new WebSocket('ws://localhost:8080');
+
+            ws.onopen = () => {
+                ws.send(JSON.stringify({ type: 'subscribe', document_id: documentId }));
+            };
+
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                if (data.type === 'status_update' && data.status === 'SIGNED_VALIDATED') {
+                    document.getElementById('statut-message').textContent = 'Document validé par SOTHIS. Vous pouvez fermer cette page.';
+                    document.getElementById('loader').style.display = 'none';
+                    document.getElementById('statut-box').classList.add('valide');
+                    ws.close();
+                }
+            };
+
+            ws.onerror = () => {
+                document.getElementById('statut-message').textContent = 'Votre signature a été enregistrée. Vous recevrez un mail de confirmation.';
+                document.getElementById('loader').style.display = 'none';
+            };
+        }
+    </script>
 </body>
 </html>

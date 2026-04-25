@@ -4,6 +4,8 @@ require_once __DIR__ . '/../models/DocumentModel.php';
 require_once __DIR__ . '/../models/TokenModel.php';
 require_once __DIR__ . '/../core/Database.php';
 require_once __DIR__ . '/../core/PdfSigner.php';
+require_once __DIR__ . '/../core/SothisNotifier.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
 class SignatureController
 {
@@ -112,9 +114,19 @@ class SignatureController
             'ip'           => $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0',
         ]);
 
+        $notifier = new SothisNotifier();
+        $notifier->notifierSignature($document['id'], [
+            'locataire'  => $document['prenom'] . ' ' . $document['nom'],
+            'email'      => $document['email'],
+            'ip'         => $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0',
+            'hash'       => $document['hash_sha256'],
+            'signed_at'  => date('Y-m-d H:i:s'),
+        ]);
+
+        $documentId = $document['id'];
         session_destroy();
 
-        header('Location: /document/confirmation');
+        header('Location: /document/confirmation?doc=' . $documentId);
         exit;
     }
 }

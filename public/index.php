@@ -26,6 +26,7 @@ switch ($uri) {
         break;
 
     case '/document/confirmation':
+        $documentId = (int) ($_GET['doc'] ?? 0);
         require __DIR__ . '/../views/confirmation.php';
         break;
 
