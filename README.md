@@ -103,6 +103,12 @@ Générer un lien de test :
 php mock/generate_token.php 1
 ```
 
+Remettre un document en attente de signature pour retester :
+
+```bash
+php mock/reset_document.php 1
+```
+
 ## Tests unitaires
 
 ```bash
