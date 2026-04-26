@@ -11,7 +11,7 @@
         <h1>Document signé et validé</h1>
         <p>Bonjour <?= htmlspecialchars($document['prenom'] . ' ' . $document['nom']) ?>,</p>
         <p>Votre document <strong><?= htmlspecialchars($document['nom_fichier']) ?></strong> a été signé et validé.</p>
-        <a href="/document/pdf" class="btn">Télécharger le document signé</a>
+        <a href="/document/telecharger?doc=<?= (int) $document['id'] ?>" class="btn">Télécharger le document signé</a>
     </div>
 </body>
 </html>

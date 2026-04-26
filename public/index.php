@@ -39,6 +39,11 @@ switch ($uri) {
         (new SignatureController())->soumettre();
         break;
 
+    case '/document/telecharger':
+        require_once __DIR__ . '/../controllers/DocumentController.php';
+        (new DocumentController())->telecharger();
+        break;
+
     case '/document/confirmation':
         $documentId = (int) ($_GET['doc'] ?? 0);
         require __DIR__ . '/../views/confirmation.php';

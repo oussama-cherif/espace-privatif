@@ -39,6 +39,34 @@ class DocumentController
         };
     }
 
+    public function telecharger(): void
+    {
+        $documentId    = (int) ($_GET['doc'] ?? 0);
+        $documentModel = new DocumentModel();
+        $document      = $documentModel->findById($documentId);
+
+        if ($document === null || $document['status'] !== 'SIGNED_VALIDATED') {
+            http_response_code(403);
+            $message = 'Ce document n\'est pas disponible au téléchargement.';
+            require __DIR__ . '/../views/error.php';
+            return;
+        }
+
+        $chemin = __DIR__ . '/../storage/documents/' . $document['id'] . '/signed/' . $document['nom_fichier'];
+
+        if (!file_exists($chemin)) {
+            http_response_code(404);
+            require __DIR__ . '/../views/404.php';
+            return;
+        }
+
+        header('Content-Type: application/pdf');
+        header('Content-Disposition: attachment; filename="' . basename($chemin) . '"');
+        header('Content-Length: ' . filesize($chemin));
+        readfile($chemin);
+        exit;
+    }
+
     public function servir(): void
     {
         session_start();
