@@ -27,6 +27,30 @@
         const documentId = <?= (int) ($documentId ?? 0) ?>;
 
         if (documentId && typeof WebSocket !== 'undefined') {
+            let updateEnAttente = null;
+            let pret = false;
+
+            function afficherValidation() {
+                document.getElementById('statut-message').textContent = 'Document validé par SOTHIS. Votre exemplaire est disponible au téléchargement.';
+                document.getElementById('loader').style.display = 'none';
+                document.getElementById('statut-box').classList.add('valide');
+                const btn = document.createElement('a');
+                btn.href = '/document/telecharger?doc=' + documentId;
+                btn.textContent = 'Télécharger le document signé';
+                btn.className = 'btn';
+                btn.style.marginTop = '0.5rem';
+                btn.style.display = 'inline-block';
+                document.getElementById('statut-box').appendChild(btn);
+            }
+
+            setTimeout(() => {
+                pret = true;
+                if (updateEnAttente) {
+                    afficherValidation();
+                    updateEnAttente.ws.close();
+                }
+            }, 2000);
+
             const ws = new WebSocket('ws://localhost:8080');
 
             ws.onopen = () => {
@@ -36,17 +60,12 @@
             ws.onmessage = (event) => {
                 const data = JSON.parse(event.data);
                 if (data.type === 'status_update' && data.status === 'SIGNED_VALIDATED') {
-                    document.getElementById('statut-message').textContent = 'Document validé par SOTHIS. Votre exemplaire est disponible au téléchargement.';
-                    document.getElementById('loader').style.display = 'none';
-                    document.getElementById('statut-box').classList.add('valide');
-                    const btn = document.createElement('a');
-                    btn.href = '/document/telecharger?doc=' + documentId;
-                    btn.textContent = 'Télécharger le document signé';
-                    btn.className = 'btn';
-                    btn.style.marginTop = '0.5rem';
-                    btn.style.display = 'inline-block';
-                    document.getElementById('statut-box').appendChild(btn);
-                    ws.close();
+                    if (pret) {
+                        afficherValidation();
+                        ws.close();
+                    } else {
+                        updateEnAttente = { ws };
+                    }
                 }
             };
 
