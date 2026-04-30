@@ -46,6 +46,8 @@ switch ($uri) {
 
     case '/document/confirmation':
         $documentId = (int) ($_GET['doc'] ?? 0);
+        $appConfig  = require __DIR__ . '/../config/app.php';
+        $wsUrl      = $appConfig['ws_url'];
         require __DIR__ . '/../views/confirmation.php';
         break;
 

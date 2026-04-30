@@ -5,4 +5,5 @@ return [
     'jwt_algo'         => 'HS256',
     'session_lifetime' => 3600,
     'base_url'         => getenv('APP_BASE_URL')  ?: ($_ENV['APP_BASE_URL']  ?? 'http://localhost:8000'),
+    'ws_url'           => getenv('WS_URL')        ?: ($_ENV['WS_URL']        ?? 'ws://localhost:8080'),
 ];

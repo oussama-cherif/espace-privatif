@@ -51,7 +51,7 @@
                 }
             }, 2000);
 
-            const ws = new WebSocket('ws://localhost:8080');
+            const ws = new WebSocket('<?= htmlspecialchars($wsUrl ?? 'ws://localhost:8080') ?>');
 
             ws.onopen = () => {
                 ws.send(JSON.stringify({ type: 'subscribe', document_id: documentId }));
