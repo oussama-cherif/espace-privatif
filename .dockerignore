@@ -2,7 +2,7 @@
 .gitignore
 .env
 vendor/
-storage/documents/*
+storage/documents/*/signed/
 storage/signatures/*
 *.log
 CLAUDE.md

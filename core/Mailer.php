@@ -20,6 +20,7 @@ class Mailer
         $this->mailer->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $this->mailer->Port       = $config['port'];
         $this->mailer->CharSet    = 'UTF-8';
+        $this->mailer->Timeout    = 5;
         $this->mailer->setFrom($config['from'], $config['from_name']);
     }
 

@@ -150,20 +150,24 @@ class SignatureController
         ]);
 
         $dateSignature = date('d/m/Y à H:i');
-        $mailer = new Mailer();
-        $mailer->confirmerLocataire(
-            $document['email'],
-            $document['prenom'],
-            $document['nom_fichier'],
-            $dateSignature
-        );
-        $mailer->notifierGestionnaire(
-            $document['gestionnaire_email'],
-            $document['prenom'] . ' ' . $document['nom'],
-            $document['nom_fichier'],
-            $dateSignature,
-            $document['residence_nom']
-        );
+        try {
+            $mailer = new Mailer();
+            $mailer->confirmerLocataire(
+                $document['email'],
+                $document['prenom'],
+                $document['nom_fichier'],
+                $dateSignature
+            );
+            $mailer->notifierGestionnaire(
+                $document['gestionnaire_email'],
+                $document['prenom'] . ' ' . $document['nom'],
+                $document['nom_fichier'],
+                $dateSignature,
+                $document['residence_nom']
+            );
+        } catch (\Exception $e) {
+            error_log('Erreur envoi mail : ' . $e->getMessage());
+        }
 
         $documentId = $document['id'];
         session_destroy();

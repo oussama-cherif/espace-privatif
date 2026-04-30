@@ -51,6 +51,40 @@ switch ($uri) {
         require __DIR__ . '/../views/confirmation.php';
         break;
 
+    case '/test/start':
+        require_once __DIR__ . '/../core/Database.php';
+        $documentId = 1;
+        $db         = Database::getConnection();
+        $db->prepare('UPDATE documents SET status = ? WHERE id = ?')->execute(['PENDING_SIGNATURE', $documentId]);
+        $db->prepare('UPDATE tokens SET used = 1 WHERE document_id = ? AND used = 0')->execute([$documentId]);
+
+        $stmt = $db->prepare('SELECT locataire_id FROM documents WHERE id = ?');
+        $stmt->execute([$documentId]);
+        $row = $stmt->fetch();
+
+        $appConfig  = require __DIR__ . '/../config/app.php';
+        $expiration = time() + 48 * 3600;
+        $payload    = [
+            'document_id'  => $documentId,
+            'locataire_id' => (int) $row['locataire_id'],
+            'exp'          => $expiration,
+            'iat'          => time(),
+        ];
+        $tokenString = \Firebase\JWT\JWT::encode($payload, $appConfig['jwt_secret'], $appConfig['jwt_algo']);
+
+        $db->prepare(
+            'INSERT INTO tokens (document_id, locataire_id, token, expire_at, used)
+             VALUES (:document_id, :locataire_id, :token, FROM_UNIXTIME(:expire_at), 0)'
+        )->execute([
+            'document_id'  => $documentId,
+            'locataire_id' => (int) $row['locataire_id'],
+            'token'        => $tokenString,
+            'expire_at'    => $expiration,
+        ]);
+
+        header('Location: /signer?token=' . $tokenString);
+        exit;
+
     default:
         http_response_code(404);
         require __DIR__ . '/../views/404.php';
