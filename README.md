@@ -109,6 +109,26 @@ Remettre un document en attente de signature pour retester :
 php mock/reset_document.php 1
 ```
 
+## Déploiement en production
+
+L'application est déployée sur Railway pour une démonstration en ligne :
+
+[https://espace-privatif-production.up.railway.app/test/start](https://espace-privatif-production.up.railway.app/test/start)
+
+Cette URL réinitialise un document de démonstration et génère un token JWT, redirigeant directement vers la page de signature.
+
+L'architecture cloud comprend 4 services indépendants :
+- `espace-privatif` : application Apache + PHP (route HTTP)
+- `websocket` : serveur Ratchet pour les notifications navigateur (port 8080 exposé en WSS)
+- `sothis` : mock SOTHIS pour la validation des signatures (port 8081)
+- `mysql` : base de données managée
+
+Limitations en environnement gratuit :
+- Envoi SMTP bloqué par l'hébergeur (timeout court configuré côté code)
+- Latence accrue car les serveurs sont aux États-Unis
+
+L'environnement Docker reproduit fidèlement cette architecture en local sans ces limitations.
+
 ## Tests unitaires
 
 ```bash
