@@ -24,3 +24,7 @@ RUN composer install --no-dev --optimize-autoloader
 
 RUN mkdir -p storage/documents storage/signatures \
     && chown -R www-data:www-data storage/
+
+COPY entrypoint.sh /entrypoint.sh
+RUN sed -i 's/\r//' /entrypoint.sh && chmod +x /entrypoint.sh
+CMD ["/entrypoint.sh"]

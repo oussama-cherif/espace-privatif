@@ -1,0 +1,9 @@
+.git
+.gitignore
+.env
+vendor/
+storage/documents/*
+storage/signatures/*
+*.log
+CLAUDE.md
+CHEATSHEET.md
