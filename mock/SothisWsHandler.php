@@ -34,6 +34,7 @@ class SothisWsHandler implements MessageComponentInterface
 
             sleep(2);
 
+            Database::reset();
             $db   = Database::getConnection();
             $stmt = $db->prepare('UPDATE documents SET status = :status WHERE id = :id');
             $stmt->execute(['status' => 'SIGNED_VALIDATED', 'id' => $documentId]);
