@@ -21,7 +21,8 @@ class SothisNotifier
                 'metadonnees'   => $metadonnees,
             ]));
 
-            $reponse = json_decode($client->receive(), true);
+            $raw = $client->receive();
+            $reponse = $raw !== null ? json_decode($raw, true) : null;
             $client->close();
 
             return isset($reponse['type']) && $reponse['type'] === 'validation_ok';
