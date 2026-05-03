@@ -67,8 +67,16 @@ class DocumentHub implements MessageComponentInterface
 
         $ids  = array_keys($this->abonnements);
         $in   = implode(',', array_fill(0, count($ids), '?'));
-        $stmt = $this->db->prepare("SELECT id, status FROM documents WHERE id IN ($in)");
-        $stmt->execute($ids);
+
+        try {
+            $stmt = $this->db->prepare("SELECT id, status FROM documents WHERE id IN ($in)");
+            $stmt->execute($ids);
+        } catch (\PDOException $e) {
+            Database::reset();
+            $this->db = Database::getConnection();
+            $stmt = $this->db->prepare("SELECT id, status FROM documents WHERE id IN ($in)");
+            $stmt->execute($ids);
+        }
 
         foreach ($stmt->fetchAll() as $doc) {
             if ($doc['status'] === 'SIGNED_VALIDATED') {
